@@ -1,0 +1,117 @@
+---
+title: "Getting Started with Next.js 15: The Complete Guide"
+description: "Learn how to build modern web applications with Next.js 15, including the latest features, best practices, and performance optimizations."
+date: "2024-01-15"
+tags: ["Next.js", "React", "Web Development", "TypeScript"]
+category: "Frontend"
+author:
+  name: "Alex Johnson"
+  bio: "Frontend developer passionate about React and modern web technologies"
+coverImage: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+featured: true
+published: true
+---
+
+# Getting Started with Next.js 15: The Complete Guide
+
+Next.js has revolutionized the way we build React applications, and version 15 brings even more exciting features to the table. In this comprehensive guide, we'll explore everything you need to know to get started with Next.js 15.
+
+## What's New in Next.js 15?
+
+Next.js 15 introduces several groundbreaking features that make development faster and more efficient:
+
+### 1. Improved App Router
+
+The App Router has been significantly enhanced with better performance and developer experience:
+
+```typescript
+// app/layout.tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  )
+}
+```
+
+### 2. Enhanced Server Components
+
+Server Components now offer better streaming and loading capabilities:
+
+```typescript
+// app/posts/[slug]/page.tsx
+export default async function PostPage({ params }: { params: { slug: string } }) {
+  const post = await getPost(params.slug)
+
+  return (
+    <article>
+      <h1>{post.title}</h1>
+      <p>{post.content}</p>
+    </article>
+  )
+}
+```
+
+## Setting Up Your First Next.js 15 Project
+
+Getting started is easier than ever:
+
+```bash
+npx create-next-app@latest my-app --typescript --tailwind --eslint --app
+cd my-app
+npm run dev
+```
+
+## Best Practices for Next.js Development
+
+Here are some essential best practices to follow:
+
+1. **Use TypeScript** for better type safety
+2. **Implement proper SEO** with metadata API
+3. **Optimize images** with next/image
+4. **Leverage caching** for better performance
+
+## Performance Optimization Techniques
+
+### Image Optimization
+
+```typescript
+import Image from 'next/image'
+
+export default function Hero() {
+  return (
+    <Image
+      src="/hero.jpg"
+      alt="Hero image"
+      width={800}
+      height={600}
+      priority
+    />
+  )
+}
+```
+
+### Code Splitting
+
+Next.js automatically handles code splitting, but you can optimize further:
+
+```typescript
+import dynamic from 'next/dynamic'
+
+const DynamicComponent = dynamic(() => import('../components/Heavy'), {
+  loading: () => <p>Loading...</p>,
+})
+```
+
+## Conclusion
+
+Next.js 15 represents a significant step forward in React development. With its improved performance, better developer experience, and powerful new features, it's the perfect time to start your next project with Next.js.
+
+Whether you're building a simple blog or a complex web application, Next.js provides all the tools you need to create fast, scalable, and maintainable applications.
+
+Happy coding!

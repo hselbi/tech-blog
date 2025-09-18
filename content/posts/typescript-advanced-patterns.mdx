@@ -1,0 +1,220 @@
+---
+title: "Advanced TypeScript Patterns: Building Type-Safe Applications"
+description: "Explore advanced TypeScript patterns including conditional types, mapped types, and utility types to build robust, type-safe applications."
+date: "2024-01-05"
+tags: ["TypeScript", "JavaScript", "Programming", "Type Safety"]
+category: "Programming"
+author:
+  name: "Michael Torres"
+  bio: "Senior TypeScript developer and open-source contributor"
+coverImage: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+featured: true
+published: true
+---
+
+# Advanced TypeScript Patterns: Building Type-Safe Applications
+
+TypeScript has evolved into a powerful tool for building robust applications. Let's explore advanced patterns that will take your TypeScript skills to the next level.
+
+## Conditional Types
+
+Conditional types allow you to create types that depend on a condition:
+
+```typescript
+type ApiResponse<T> = T extends string
+  ? { message: T }
+  : T extends number
+  ? { code: T }
+  : { data: T }
+
+type StringResponse = ApiResponse<string> // { message: string }
+type NumberResponse = ApiResponse<number> // { code: number }
+type ObjectResponse = ApiResponse<object> // { data: object }
+```
+
+## Mapped Types
+
+Create new types by transforming properties of existing types:
+
+```typescript
+type Optional<T> = {
+  [P in keyof T]?: T[P]
+}
+
+type ReadOnly<T> = {
+  readonly [P in keyof T]: T[P]
+}
+
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
+type OptionalUser = Optional<User> // All properties optional
+type ReadOnlyUser = ReadOnly<User> // All properties readonly
+```
+
+## Template Literal Types
+
+Build types using template literal syntax:
+
+```typescript
+type EventName<T extends string> = `on${Capitalize<T>}`
+type HttpMethod = 'get' | 'post' | 'put' | 'delete'
+type ApiRoute<T extends HttpMethod> = `${T}:/api/v1/`
+
+type ClickHandler = EventName<'click'> // 'onClick'
+type GetRoute = ApiRoute<'get'> // 'get:/api/v1/'
+```
+
+## Utility Types in Practice
+
+### Deep Partial
+
+```typescript
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P]
+}
+
+interface Config {
+  database: {
+    host: string
+    port: number
+    credentials: {
+      username: string
+      password: string
+    }
+  }
+  api: {
+    version: string
+    timeout: number
+  }
+}
+
+type PartialConfig = DeepPartial<Config>
+```
+
+### Type Guards
+
+```typescript
+function isString(value: unknown): value is string {
+  return typeof value === 'string'
+}
+
+function isUser(obj: unknown): obj is User {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    'id' in obj &&
+    'name' in obj &&
+    'email' in obj
+  )
+}
+
+// Usage
+function processData(data: unknown) {
+  if (isString(data)) {
+    // data is now typed as string
+    console.log(data.toUpperCase())
+  }
+
+  if (isUser(data)) {
+    // data is now typed as User
+    console.log(data.name)
+  }
+}
+```
+
+## Advanced Function Types
+
+### Function Overloads
+
+```typescript
+interface EventEmitter {
+  on(event: 'data', callback: (data: string) => void): void
+  on(event: 'error', callback: (error: Error) => void): void
+  on(event: 'close', callback: () => void): void
+  on(event: string, callback: (...args: any[]) => void): void
+}
+```
+
+### Generic Constraints
+
+```typescript
+interface Lengthwise {
+  length: number
+}
+
+function logLength<T extends Lengthwise>(arg: T): T {
+  console.log(arg.length)
+  return arg
+}
+
+logLength('hello') // ✅ string has length
+logLength([1, 2, 3]) // ✅ array has length
+logLength(42) // ❌ number doesn't have length
+```
+
+## Builder Pattern with TypeScript
+
+```typescript
+class QueryBuilder<T = {}> {
+  private query: T = {} as T
+
+  select<K extends keyof any>(
+    fields: K[]
+  ): QueryBuilder<T & { select: K[] }> {
+    return new QueryBuilder<T & { select: K[] }>()
+  }
+
+  where<K extends keyof any, V>(
+    field: K,
+    value: V
+  ): QueryBuilder<T & { where: { [P in K]: V } }> {
+    return new QueryBuilder<T & { where: { [P in K]: V } }>()
+  }
+
+  build(): T {
+    return this.query
+  }
+}
+
+// Usage
+const query = new QueryBuilder()
+  .select(['name', 'email'])
+  .where('active', true)
+  .build()
+```
+
+## Error Handling with Result Types
+
+```typescript
+type Result<T, E = Error> =
+  | { success: true; data: T }
+  | { success: false; error: E }
+
+async function fetchUser(id: number): Promise<Result<User>> {
+  try {
+    const user = await api.getUser(id)
+    return { success: true, data: user }
+  } catch (error) {
+    return { success: false, error: error as Error }
+  }
+}
+
+// Usage
+const result = await fetchUser(123)
+
+if (result.success) {
+  console.log(result.data.name) // Type-safe access
+} else {
+  console.error(result.error.message)
+}
+```
+
+## Conclusion
+
+These advanced TypeScript patterns provide powerful tools for building type-safe, maintainable applications. By leveraging conditional types, mapped types, and utility types, you can create robust APIs that catch errors at compile time and provide excellent developer experience.
+
+Remember that with great power comes great responsibility – use these patterns judiciously and always prioritize code readability and maintainability.
