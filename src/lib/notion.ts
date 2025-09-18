@@ -78,11 +78,11 @@ export async function getNotionPosts(): Promise<NotionBlogPostMeta[]> {
     const response = await getNotionClient().databases.query({
       database_id: notionConfig.databaseId,
       ...query,
-    })
+    } as any)
 
     const posts = await Promise.all(
       response.results.map(async (page: any) => {
-        return await convertNotionPageToPostMeta(page as NotionPage)
+        return await convertNotionPageToPostMeta(page as unknown as NotionPage)
       })
     )
 
@@ -123,13 +123,13 @@ export async function getNotionPostBySlug(slug: string): Promise<NotionBlogPost 
     const response = await getNotionClient().databases.query({
       database_id: notionConfig.databaseId,
       ...query,
-    })
+    } as any)
 
     if (response.results.length === 0) {
       return null
     }
 
-    const page = response.results[0] as NotionPage
+    const page = response.results[0] as unknown as NotionPage
     return await convertNotionPageToPost(page)
   } catch (error) {
     console.error('Error fetching Notion post by slug:', error)
@@ -168,11 +168,11 @@ export async function getNotionFeaturedPosts(): Promise<NotionBlogPostMeta[]> {
     const response = await getNotionClient().databases.query({
       database_id: notionConfig.databaseId,
       ...query,
-    })
+    } as any)
 
     const posts = await Promise.all(
       response.results.map(async (page: any) => {
-        return await convertNotionPageToPostMeta(page as NotionPage)
+        return await convertNotionPageToPostMeta(page as unknown as NotionPage)
       })
     )
 
@@ -489,7 +489,7 @@ export async function createNotionArticle(articleData: {
     postsCache = { data: null, timestamp: 0 }
 
     // Convert response to NotionBlogPost format
-    const page = response as any as NotionPage
+    const page = response as unknown as NotionPage
     return await convertNotionPageToPost(page)
   } catch (error) {
     console.error('Error creating Notion article:', error)
@@ -609,7 +609,7 @@ export async function updateNotionArticle(
 
     // Fetch and return updated page
     const updatedPage = await getNotionClient().pages.retrieve({ page_id: notionId })
-    return await convertNotionPageToPost(updatedPage as any as NotionPage)
+    return await convertNotionPageToPost(updatedPage as unknown as NotionPage)
   } catch (error) {
     console.error('Error updating Notion article:', error)
     throw error
@@ -665,11 +665,11 @@ export async function getUserNotionArticles(authorEmail: string): Promise<Notion
     const response = await getNotionClient().databases.query({
       database_id: userDatabaseId,
       ...query,
-    })
+    } as any)
 
     const posts = await Promise.all(
       response.results.map(async (page: any) => {
-        return await convertNotionPageToPostMeta(page as NotionPage)
+        return await convertNotionPageToPostMeta(page as unknown as NotionPage)
       })
     )
 
@@ -689,12 +689,12 @@ async function addContentToNotionPage(pageId: string, htmlContent: string): Prom
 
     const blocks = [
       {
-        object: 'block',
-        type: 'paragraph',
+        object: 'block' as const,
+        type: 'paragraph' as const,
         paragraph: {
           rich_text: [
             {
-              type: 'text',
+              type: 'text' as const,
               text: {
                 content: textContent.slice(0, 2000), // Notion has text limits
               },
@@ -709,12 +709,12 @@ async function addContentToNotionPage(pageId: string, htmlContent: string): Prom
       let remainingContent = textContent.slice(2000)
       while (remainingContent.length > 0) {
         blocks.push({
-          object: 'block',
-          type: 'paragraph',
+          object: 'block' as const,
+          type: 'paragraph' as const,
           paragraph: {
             rich_text: [
               {
-                type: 'text',
+                type: 'text' as const,
                 text: {
                   content: remainingContent.slice(0, 2000),
                 },
@@ -807,11 +807,11 @@ export async function getAllUserNotionPosts(): Promise<NotionBlogPostMeta[]> {
         const response = await getNotionClient().databases.query({
           database_id: userDb.databaseId,
           ...query,
-        })
+        } as any)
 
         const posts = await Promise.all(
           response.results.map(async (page: any) => {
-            return await convertNotionPageToPostMeta(page as NotionPage)
+            return await convertNotionPageToPostMeta(page as unknown as NotionPage)
           })
         )
 

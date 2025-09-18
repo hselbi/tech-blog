@@ -15,9 +15,9 @@ import mdxComponents from "@/components/mdx-components"
 import type { Metadata } from "next"
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -28,7 +28,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const post = await getUnifiedPostBySlug(params.slug)
+  const { slug } = await params
+  const post = await getUnifiedPostBySlug(slug)
 
   if (!post) {
     return {
@@ -68,7 +69,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = await getUnifiedPostBySlug(params.slug)
+  const { slug } = await params
+  const post = await getUnifiedPostBySlug(slug)
 
   if (!post) {
     notFound()

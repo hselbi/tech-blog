@@ -13,7 +13,9 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const shareUrl = `${window.location.origin}${url}`
+  const shareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}${url}`
+    : url
   const shareText = description || title
 
   const shareLinks = [
@@ -38,6 +40,7 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
   ]
 
   const copyToClipboard = async () => {
+    if (typeof window === 'undefined') return
     try {
       await navigator.clipboard.writeText(shareUrl)
       setCopied(true)
@@ -48,6 +51,11 @@ export function SocialShare({ url, title, description }: SocialShareProps) {
   }
 
   const handleNativeShare = async () => {
+    if (typeof window === 'undefined') {
+      setIsOpen(!isOpen)
+      return
+    }
+
     if (navigator.share) {
       try {
         await navigator.share({

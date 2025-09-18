@@ -6,9 +6,9 @@ import { getUnifiedPostsByCategory, getUnifiedCategories } from "@/lib/blog-serv
 import { BlogCard } from "@/components/blog-card"
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     category: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -19,7 +19,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
-  const decodedCategory = decodeURIComponent(params.category)
+  const { category } = await params
+  const decodedCategory = decodeURIComponent(category)
   const posts = await getUnifiedPostsByCategory(decodedCategory)
 
   if (posts.length === 0) {
@@ -42,7 +43,8 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
-  const decodedCategory = decodeURIComponent(params.category)
+  const { category } = await params
+  const decodedCategory = decodeURIComponent(category)
   const posts = await getUnifiedPostsByCategory(decodedCategory)
 
   if (posts.length === 0) {

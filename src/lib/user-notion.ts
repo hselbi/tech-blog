@@ -51,19 +51,30 @@ export async function createUserDatabase(userEmail: string, userName: string): P
 export function getUserDatabaseId(userEmail: string): string | null {
   // In a real app, this would query your user database
   // For now, we'll use the in-memory storage
-  const { users } = require('./auth')
-  const user = users.find((u: any) => u.email === userEmail)
-  return user?.notionDatabaseId || null
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { users } = require('./auth')
+    const user = users.find((u: any) => u.email === userEmail)
+    return user?.notionDatabaseId || null
+  } catch (error) {
+    console.error('Error accessing user storage:', error)
+    return null
+  }
 }
 
 // Function to set user's database ID
 export function setUserDatabaseId(userEmail: string, databaseId: string): void {
   // In a real app, this would update your user database
   // For now, we'll update the in-memory storage
-  const { users } = require('./auth')
-  const userIndex = users.findIndex((u: any) => u.email === userEmail)
-  if (userIndex !== -1) {
-    users[userIndex].notionDatabaseId = databaseId
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { users } = require('./auth')
+    const userIndex = users.findIndex((u: any) => u.email === userEmail)
+    if (userIndex !== -1) {
+      users[userIndex].notionDatabaseId = databaseId
+    }
+  } catch (error) {
+    console.error('Error updating user storage:', error)
   }
 }
 
@@ -87,15 +98,21 @@ export async function ensureUserDatabase(userEmail: string, userName: string): P
 export async function getAllUserDatabases(): Promise<Array<{ email: string, databaseId: string, userName: string }>> {
   // In a real app, this would query your user database
   // For now, we'll use the in-memory storage
-  const { users } = require('./auth')
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { users } = require('./auth')
 
-  return users
-    .filter((user: any) => user.notionDatabaseId)
-    .map((user: any) => ({
-      email: user.email,
-      databaseId: user.notionDatabaseId,
-      userName: user.name,
-    }))
+    return users
+      .filter((user: any) => user.notionDatabaseId)
+      .map((user: any) => ({
+        email: user.email,
+        databaseId: user.notionDatabaseId,
+        userName: user.name,
+      }))
+  } catch (error) {
+    console.error('Error accessing user databases:', error)
+    return []
+  }
 }
 
 export interface UserNotionConfig {

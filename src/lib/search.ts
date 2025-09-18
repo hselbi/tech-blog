@@ -5,7 +5,7 @@ export class BlogSearch {
   private fuse: Fuse<BlogPostMeta>
 
   constructor(posts: BlogPostMeta[]) {
-    const options: Fuse.IFuseOptions<BlogPostMeta> = {
+    const options: any = {
       keys: [
         { name: 'title', weight: 3 },
         { name: 'description', weight: 2 },

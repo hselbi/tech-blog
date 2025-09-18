@@ -13,8 +13,9 @@ import {
 // Get single article
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params
   try {
     const session = await getServerSession(authOptions)
 
@@ -28,7 +29,7 @@ export async function GET(
     // First try to find by Notion ID for user's articles
     if (session?.user?.email) {
       const userArticles = await getUserNotionArticles(session.user.email)
-      const userArticle = userArticles.find(a => a.notionId === params.id)
+      const userArticle = userArticles.find(a => a.notionId === resolvedParams.id)
 
       if (userArticle) {
         // User can access their own articles (including drafts)
@@ -40,7 +41,7 @@ export async function GET(
     }
 
     // Try to find by slug in published articles
-    const article = await getNotionPostBySlug(params.id)
+    const article = await getNotionPostBySlug(resolvedParams.id)
 
     if (!article) {
       return NextResponse.json(
@@ -70,8 +71,9 @@ export async function GET(
 // Update article
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params
   try {
     const session = await getServerSession(authOptions)
 
@@ -91,7 +93,7 @@ export async function PUT(
 
     // Find the article in user's articles
     const userArticles = await getUserNotionArticles(session.user.email)
-    const article = userArticles.find(a => a.notionId === params.id)
+    const article = userArticles.find(a => a.notionId === resolvedParams.id)
 
     if (!article) {
       return NextResponse.json(
@@ -103,7 +105,7 @@ export async function PUT(
     const updates = await request.json()
 
     // Update the article in Notion
-    const updatedArticle = await updateNotionArticle(params.id, updates)
+    const updatedArticle = await updateNotionArticle(resolvedParams.id, updates)
 
     if (!updatedArticle) {
       return NextResponse.json(
@@ -131,8 +133,9 @@ export async function PUT(
 // Delete article
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params
   try {
     const session = await getServerSession(authOptions)
 
@@ -152,7 +155,7 @@ export async function DELETE(
 
     // Find the article in user's articles
     const userArticles = await getUserNotionArticles(session.user.email)
-    const article = userArticles.find(a => a.notionId === params.id)
+    const article = userArticles.find(a => a.notionId === resolvedParams.id)
 
     if (!article) {
       return NextResponse.json(
@@ -162,7 +165,7 @@ export async function DELETE(
     }
 
     // Delete the article from Notion (archives it)
-    await deleteNotionArticle(params.id)
+    await deleteNotionArticle(resolvedParams.id)
 
     // Invalidate cache to reflect deletion
     invalidateCache()

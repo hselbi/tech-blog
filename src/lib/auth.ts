@@ -108,7 +108,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             password: '', // No password for SSO users
             provider: account.provider,
-            avatar: user.image,
+            avatar: user.image || undefined,
             notionDatabaseId: undefined,
             notionToken: undefined,
             createdAt: new Date().toISOString(),
@@ -153,7 +153,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/signup',
   },
   secret: process.env.NEXTAUTH_SECRET || 'your-secret-key',
   session: {

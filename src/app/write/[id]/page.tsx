@@ -2,20 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { RichTextEditor } from '@/components/rich-text-editor'
 import { Save, Eye, Upload, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
-interface EditPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default function EditPage({ params }: EditPageProps) {
+export default function EditPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const params = useParams() as { id: string }
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState('')

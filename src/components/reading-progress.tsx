@@ -6,6 +6,8 @@ export function ReadingProgress() {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    if (typeof window === 'undefined') return
+
     const updateProgress = () => {
       const scrollTop = window.scrollY
       const docHeight = document.documentElement.scrollHeight - window.innerHeight

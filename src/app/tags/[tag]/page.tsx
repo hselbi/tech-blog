@@ -6,9 +6,9 @@ import { getUnifiedPostsByTag, getUnifiedTags } from "@/lib/blog-service"
 import { BlogCard } from "@/components/blog-card"
 
 interface TagPageProps {
-  params: {
+  params: Promise<{
     tag: string
-  }
+  }>
 }
 
 export async function generateStaticParams() {
@@ -19,7 +19,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: TagPageProps): Promise<Metadata> {
-  const decodedTag = decodeURIComponent(params.tag)
+  const resolvedParams = await params
+  const decodedTag = decodeURIComponent(resolvedParams.tag)
   const posts = await getUnifiedPostsByTag(decodedTag)
 
   if (posts.length === 0) {
@@ -42,7 +43,8 @@ export async function generateMetadata({ params }: TagPageProps): Promise<Metada
 }
 
 export default async function TagPage({ params }: TagPageProps) {
-  const decodedTag = decodeURIComponent(params.tag)
+  const resolvedParams = await params
+  const decodedTag = decodeURIComponent(resolvedParams.tag)
   const posts = await getUnifiedPostsByTag(decodedTag)
 
   if (posts.length === 0) {
